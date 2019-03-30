@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title> Leaflet Web Map </title>
+<!-- Load Leaflet from CDN -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<!-- Load Esri Leaflet from CDN -->
+<script src="https://unpkg.com/esri-leaflet/dist/esri-leaflet.js"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.0/dist/leaflet.css" />
+<link rel="stylesheet" href="../src/leaflet-search.css" />
+<link rel="stylesheet" href="style.css" />
+
+<style>
+#map {max-width: auto;
+height: 500px;
+}
+.custom .leaflet-popup-tip,
+.custom .leaflet-popup-content-wrapper {
+    background: #e93434;
+    color: #ffffff;}
+
+table{
+font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #ffffff;
+  text-align: center;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+
+.center{
+background-color: #000066;
+color: White;
+text-align:center;
+font-style:normal;
+font-size:20px}
+
+.centersubheader{
+text-align:center;
+border-style:solid;
+border-width:5px;}
+
+</style>
+</head>
+<body>
+
+<header>
+<div class="center">
+<h1>Tourist Attraction for the Yellowknife and Whati</h1>
+</div>
+
+</header>
+<table>
+<tr>
+<td>
+<div id="map"></div>
+
+<script>
+
+var RoadsStyle = {color: "#ff0000"};
+var HighwayStyle = {color: '#000000'};
+var POTpopupTemplate = "<h3>{NAME}</h3>{CATEGORY}";
+var CitypopupTemplate = "<h3>{CSDNAME}</h3>";
+
+
+var cities = L.layerGroup();
+	new L.esri.featureLayer({
+        url: "https://edumaps.esri.ca/arcgis/rest/services/Demographics/Population_Density/MapServer/0",
+	where: "CSDNAME = 'Yellowknife'"})
+.bindPopup(function(e){return L.Util.template(CitypopupTemplate, e.feature.properties)}).addTo(cities);
+	new L.esri.featureLayer({
+        url: "https://edumaps.esri.ca/arcgis/rest/services/Demographics/Population_Density/MapServer/0",
+	where: "CSDNAME = 'Whatì'"})
+.bindPopup(function(e){return L.Util.template(CitypopupTemplate, e.feature.properties)})
+.addTo(cities);
+	
+var baseLayers = {
+    "Topographic": L.esri.basemapLayer("Topographic"),
+	"Gray": L.esri.basemapLayer("Gray"),
+	"Streets": L.esri.basemapLayer("Streets")};
+
+
+	var map = L.map('map', {
+		center: [63, -115],
+		zoom: 7,
+		layers: [baseLayers.Topographic, cities]
+	});
+    
+    
+var point_of_interest_Whati = new L.esri.featureLayer({
+        url: "https://services3.arcgis.com/dbPIAS8AjDJqfyOS/arcgis/rest/services/Geog487_Webmap/FeatureServer/0"})
+.bindPopup(function(e){return L.Util.template(POTpopupTemplate, e.feature.properties)});
+    
+var point_of_interest_Yellowknife = new L.esri.featureLayer({
+        url: "https://services3.arcgis.com/dbPIAS8AjDJqfyOS/arcgis/rest/services/Geog487_Webmap/FeatureServer/1"})
+.bindPopup(function(e){return L.Util.template(POTpopupTemplate, e.feature.properties)});
+	
+var roads_Whati = new L.esri.featureLayer({
+        url: "https://services3.arcgis.com/dbPIAS8AjDJqfyOS/arcgis/rest/services/Geog487_Webmap/FeatureServer/2",
+		style: RoadsStyle});
+
+var roads_Yellowknife = new L.esri.featureLayer({
+        url: "https://services3.arcgis.com/dbPIAS8AjDJqfyOS/arcgis/rest/services/Geog487_Webmap/FeatureServer/3",
+		style: RoadsStyle});
+
+var highway = new L.esri.featureLayer({
+    url: "https://services3.arcgis.com/dbPIAS8AjDJqfyOS/arcgis/rest/services/Whati_Highway/FeatureServer/0", style:HighwayStyle});
+    
+    
+	var overlays = {
+        "Point of Interests in Yellowknife": point_of_interest_Yellowknife,
+        "Point of Interests in Whati": point_of_interest_Whati,
+        "Highway": highway,
+        "Roads in Yellowknife": roads_Yellowknife,
+        "Roads in Whati": roads_Whati,
+		"Cities": cities};
+	
+    
+    L.control.layers(baseLayers, overlays).addTo(map);
+
+	
+</script>
+</body>
+</td>
+<td style="background-color:LightGray;width:30%;vertical-align: top">
+<h3 style="text-align:left">Details</h3>
+<h4>Communities Shown on the map</h4>
+<div style="text-align:left">
+<li><a href="https://www.yellowknife.ca/en/index.asp" target="_blank">City of Yellowknife</a></br>
+<li><a href="https://www.tlicho.ca/community/whati" target="_blank">Whati Community</a></br>
+</br>
+This map shows places that are often thought of as point of interest within 
+Yellowknife & Whati in Northwest Territories.
+</br>
+</br>
+Click on the layer button to turn on and off the different layers. By turning on
+the Point of Interest layer and click on them, the label of the place will come as a pop-up.
+</div>
+</td>
+</tr>
+<tr>
+<td style="background-color:White">
+</td>
+<td style="background-color:White">
+<img src="https://uwaterloo.ca/brand/sites/ca.brand/files/resize/uploads/images/university_of_waterloo_logo-500x151.jpg" width="80%" height="40%">
+</td>
+</tr>
+</table>
+</html>
